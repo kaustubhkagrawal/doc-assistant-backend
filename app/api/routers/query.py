@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 from app.engine.index import get_chat_engine, get_query_engine
 
-query_router = r = APIRouter()
+router = r = APIRouter()
 
 
 class _QueryData(BaseModel):
@@ -22,7 +22,7 @@ class _Result(BaseModel):
     forwardToClientEnabled: bool
 
 
-@r.post("/query")
+@r.post("")
 async def query(
     data: _QueryData,
     query_engine: BaseQueryEngine = Depends(get_query_engine),
