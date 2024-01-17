@@ -11,12 +11,7 @@ from datetime import datetime
 from llama_index.schema import BaseNode, NodeWithScore
 from llama_index.callbacks.schema import EventPayload
 from llama_index.query_engine.sub_question_query_engine import SubQuestionAnswerPair
-from app.models.db import (
-    MessageRoleEnum,
-    MessageStatusEnum,
-    MessageSubProcessSourceEnum,
-    MessageSubProcessStatusEnum,
-)
+
 from app.core.constants import DB_DOC_ID_KEY
 
 
@@ -31,11 +26,13 @@ class Base(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes=True
 
 
 class BaseMetadataObject(BaseModel):
     class Config:
         orm_mode = True
+        from_attributes=True
 
 
 class Citation(BaseMetadataObject):
@@ -126,16 +123,8 @@ class DocumentMetadataKeysEnum(str, Enum):
     Enum for the keys of the metadata map for a document
     """
 
-    SEC_DOCUMENT = "sec_document"
+    # SEC_DOCUMENT = "sec_document"
 
-
-class SecDocumentTypeEnum(str, Enum):
-    """
-    Enum for the type of sec document
-    """
-
-    TEN_K = "10-K"
-    TEN_Q = "10-Q"
 
 
 class SecDocumentMetadata(BaseModel):
@@ -152,7 +141,7 @@ class SecDocumentMetadata(BaseModel):
     date_as_of_change: Optional[datetime]
 
 
-DocumentMetadataMap = Dict[Union[DocumentMetadataKeysEnum, str], Any]
+DocumentMetadataMap = Dict[str, Any]
 
 
 class Document(Base):

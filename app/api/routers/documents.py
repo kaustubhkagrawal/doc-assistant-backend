@@ -2,9 +2,11 @@ import boto3
 from fastapi import APIRouter, UploadFile, HTTPException, File
 
 from app.core.config import settings
+from app.services.document import upsert_single_document
 from io import BytesIO
 from pydantic import BaseModel
 from app.utils.file_utils import get_Document_url
+from fastapi.encoders import jsonable_encoder
 
 router = APIRouter()
 
@@ -41,5 +43,6 @@ async def upload_file_to_s3(file: UploadFile = File()):
             raise HTTPException(status_code=500, detail="Failed to upload file to S3")
         
     url: str = get_Document_url(file_name=file.filename)
-
-    return {"message": "File uploaded successfully", "url": url}
+    doc = await upsert_single_document(url)
+    doc_dict = jsonable_encoder(doc)
+    return doc_dict
