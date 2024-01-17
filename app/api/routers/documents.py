@@ -38,5 +38,8 @@ async def upload_file_to_s3(file: UploadFile = File()):
         except Exception as e:
             print(e)
             raise HTTPException(status_code=500, detail="Failed to upload file to S3")
+        
+    url: str = settings.S3_ENDPOINT_URL + '/' + settings.S3_ASSET_BUCKET_NAME + '/' + file.filename
+    print(url)
 
-    return {"message": "File uploaded successfully"}
+    return {"message": "File uploaded successfully", "url": url}
