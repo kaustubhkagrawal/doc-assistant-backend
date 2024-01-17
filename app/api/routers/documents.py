@@ -4,6 +4,7 @@ from fastapi import APIRouter, UploadFile, HTTPException, File
 from app.core.config import settings
 from io import BytesIO
 from pydantic import BaseModel
+from app.utils.file_utils import get_Document_url
 
 router = APIRouter()
 
@@ -39,7 +40,6 @@ async def upload_file_to_s3(file: UploadFile = File()):
             print(e)
             raise HTTPException(status_code=500, detail="Failed to upload file to S3")
         
-    url: str = settings.S3_ENDPOINT_URL + '/' + settings.S3_ASSET_BUCKET_NAME + '/' + file.filename
-    print(url)
+    url: str = get_Document_url(file_name=file.filename)
 
     return {"message": "File uploaded successfully", "url": url}
