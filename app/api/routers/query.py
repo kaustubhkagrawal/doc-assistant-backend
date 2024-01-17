@@ -18,7 +18,7 @@ class _QueryData(BaseModel):
 
 
 class _Result(BaseModel):
-    response: str
+    result: str
     forwardToClientEnabled: bool
 
 
@@ -38,7 +38,7 @@ async def query(
     response = await query_engine.aquery(data.query)
     print(response.response)
     return _Result(
-        response=response.response, 
+        result=response.response, 
         forwardToClientEnabled=True
     )
 
