@@ -18,6 +18,7 @@ async def fetch_documents(
     db: AsyncSession,
     id: Optional[str] = None,
     ids: Optional[List[str]] = None,
+    assistant_id: Optional[str] = None,
     url: Optional[str] = None,
     limit: Optional[int] = None,
 ) -> Optional[Sequence[DocumentSchema]]:
@@ -29,12 +30,17 @@ async def fetch_documents(
     if id is not None:
         stmt = stmt.where(Document.id == id)
         limit = 1
+    elif assistant_id is not None:
+        print(assistant_id)
+        stmt = stmt.where(Document.assistant_id == assistant_id)
     elif ids is not None:
         stmt = stmt.where(Document.id.in_(ids))
+    
     if url is not None:
         stmt = stmt.where(Document.url == url)
     if limit is not None:
         stmt = stmt.limit(limit)
+        
     result = await db.execute(stmt)
     documents = result.scalars().all()
     return [DocumentSchema.from_orm(doc) for doc in documents]
