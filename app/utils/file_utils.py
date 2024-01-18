@@ -5,6 +5,29 @@ import s3fs
 from fsspec.asyn import AsyncFileSystem
 from app.core.config import settings
 
+import os
+
+from urllib.parse import urlsplit
+
+def generate_name_from_url(url):
+    # Parse the URL
+    parsed_url = urlsplit(url)
+
+    # Extract the domain or path component
+    if parsed_url.netloc:
+        name = parsed_url.netloc.replace(".", "_")
+    else:
+        name = parsed_url.path.replace("/", "_").strip("_")
+
+    # Exclude file extension if present
+    filename = os.path.basename(parsed_url.path)
+    name_without_extension = os.path.splitext(filename)[0]
+    if name_without_extension:
+        name = name_without_extension.replace(".", "_")
+
+    return name
+
+
 # def get_s3_client():
 #     boto_session = boto3.Session(aws_access_key_id=settings.AWS_KEY, aws_secret_access_key=settings.AWS_SECRET)
 

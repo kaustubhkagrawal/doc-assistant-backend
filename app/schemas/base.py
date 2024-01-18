@@ -146,6 +146,8 @@ DocumentMetadataMap = Dict[str, Any]
 
 class DocumentSchema(Base):
     url: str
+    name: Optional[str]
+    assistant_id: Optional[str]
     metadata_map: Optional[DocumentMetadataMap] = None
 
 

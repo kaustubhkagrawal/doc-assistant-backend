@@ -63,6 +63,8 @@ class Settings(PreviewPrefixedSettings):
     VECTOR_STORE_TABLE_NAME: str = "pg_vector_store"
     SENTRY_DSN: Optional[str] = ""
     RENDER_GIT_COMMIT: Optional[str] = ""
+    VAPI_BASE_URL: str = ""
+    VAPI_API_SECRET: str = ""
 
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \

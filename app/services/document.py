@@ -1,12 +1,15 @@
 from typing import Optional, Sequence, List
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.postgresql import insert
+
+from uuid import UUID
 
 from app.db.session import SessionLocal
 from app.models.db import Document
 from app.schemas.base import DocumentSchema
+from app.utils.file_utils import generate_name_from_url
 
 
 
@@ -48,7 +51,8 @@ async def upsert_single_document(doc_url: str):
         print("DOC_URL must be an http(s) based url value")
         return
     metadata_map = {}
-    doc = DocumentSchema(url=doc_url, metadata_map=metadata_map)
+    name=generate_name_from_url(doc_url)
+    doc = DocumentSchema(url=doc_url, name=name, assistant_id="", metadata_map=metadata_map)
 
 
     async with SessionLocal() as db:
@@ -76,3 +80,21 @@ async def upsert_document_by_url(
     upserted_doc = DocumentSchema.from_orm(result.scalars().first())
     await db.commit()
     return upserted_doc
+
+
+async def update_assistant_to_document(
+     db: AsyncSession, 
+    document_id: UUID, 
+    assistant_id: str  
+):
+    """
+    update assistant_id into the document
+    """
+    
+    stmt = update(Document).where(Document.id==document_id).values(assistant_id=assistant_id)
+    
+    stmt = stmt.returning(Document)
+    result = await db.execute(stmt)
+    updated_doc = DocumentSchema.from_orm(result.scalars().first())
+    await db.commit()
+    return updated_doc
