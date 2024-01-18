@@ -1,9 +1,41 @@
-from typing import Optional, cast, Sequence, List
+from typing import Optional, Sequence, List
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.db import Document
-from app.db.session import SessionLocal
-from app.schemas import base
 from sqlalchemy.dialects.postgresql import insert
+
+from app.db.session import SessionLocal
+from app.models.db import Document
+from app.schemas.base import DocumentSchema
+
+
+
+
+async def fetch_documents(
+    db: AsyncSession,
+    id: Optional[str] = None,
+    ids: Optional[List[str]] = None,
+    url: Optional[str] = None,
+    limit: Optional[int] = None,
+) -> Optional[Sequence[DocumentSchema]]:
+    """
+    Fetch a document by its url or id
+    """
+
+    stmt = select(Document)
+    if id is not None:
+        stmt = stmt.where(Document.id == id)
+        limit = 1
+    elif ids is not None:
+        stmt = stmt.where(Document.id.in_(ids))
+    if url is not None:
+        stmt = stmt.where(Document.url == url)
+    if limit is not None:
+        stmt = stmt.limit(limit)
+    result = await db.execute(stmt)
+    documents = result.scalars().all()
+    return [DocumentSchema.from_orm(doc) for doc in documents]
+
 
 
 async def upsert_single_document(doc_url: str):
@@ -16,7 +48,7 @@ async def upsert_single_document(doc_url: str):
         print("DOC_URL must be an http(s) based url value")
         return
     metadata_map = {}
-    doc = base.DocumentSchema(url=doc_url, metadata_map=metadata_map)
+    doc = DocumentSchema(url=doc_url, metadata_map=metadata_map)
 
 
     async with SessionLocal() as db:
@@ -28,8 +60,8 @@ async def upsert_single_document(doc_url: str):
 
 
 async def upsert_document_by_url(
-    db: AsyncSession, document: base.DocumentSchema
-) -> base.DocumentSchema:
+    db: AsyncSession, document: DocumentSchema
+) -> DocumentSchema:
     """
     Upsert a document
     """
@@ -41,6 +73,6 @@ async def upsert_document_by_url(
     )
     stmt = stmt.returning(Document)
     result = await db.execute(stmt)
-    upserted_doc = base.DocumentSchema.from_orm(result.scalars().first())
+    upserted_doc = DocumentSchema.from_orm(result.scalars().first())
     await db.commit()
     return upserted_doc

@@ -35,7 +35,7 @@ class BaseMetadataObject(BaseModel):
         from_attributes=True
 
 
-class Citation(BaseMetadataObject):
+class CitationSchema(BaseMetadataObject):
     document_id: UUID
     text: str
     page_number: int

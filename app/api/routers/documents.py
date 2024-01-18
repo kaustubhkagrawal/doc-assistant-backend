@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, UploadFile, HTTPException, File
+from fastapi import APIRouter, UploadFile, HTTPException, File, Depends
 
 from io import BytesIO
 from pydantic import BaseModel
@@ -15,12 +15,18 @@ from llama_index.vector_stores.types import (
     ExactMatchFilter,
 )
 
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from uuid import UUID
+
+from app.api.deps import get_db
 from app.core.config import settings
 from app.core.constants import DB_DOC_ID_KEY
 from app.engine.indexing import create_index_from_doc, index_to_query_engine, build_description_for_document
 from app.engine.context import create_tool_service_context
 from app.schemas.base import DocumentSchema
-from app.services.document import upsert_single_document
+from app.services.document import upsert_single_document, fetch_documents
 from app.utils.file_utils import get_Document_url, get_s3_fs
 
 
@@ -37,29 +43,20 @@ ALLOWED_EXTENSIONS = ["pdf", "txt", "md", "jpg", "jpeg", "png", "gif"]
 def is_allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# @router.post("/upload")
-# async def upload_file_to_s3(file: UploadFile = File()):
-#     print(file.filename)
-#     if not is_allowed_file(file.filename):
-#         raise HTTPException(status_code=400, detail="File type not allowed")
 
-#     with BytesIO() as file_stream:
-#         # Read the file into memory
-#         file_stream.write(await file.read())
-#         file_stream.seek(0)
+@router.get("/{document_id}")
+async def get_document(
+    document_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> DocumentSchema:
+    """
+    Get all documents
+    """
+    docs = await fetch_documents(db, id=document_id)
+    if len(docs) == 0:
+        raise HTTPException(status_code=404, detail="Document not found")
 
-#         # Upload the file to S3
-#         try:
-#             s3_client.upload_fileobj(file_stream, settings.S3_ASSET_BUCKET_NAME, file.filename)
-#         except Exception as e:
-#             print(e)
-#             raise HTTPException(status_code=500, detail="Failed to upload Document")
-        
-#     url: str = get_Document_url(file_name=file.filename)
-#     doc = await upsert_single_document(url)
-#     doc_dict = jsonable_encoder(doc)
-#     return doc_dict
-
+    return docs[0]
 
 @router.post("/upload")
 async def upload_file_to_s3(file: UploadFile = File()):
@@ -100,6 +97,7 @@ async def upload_file_to_s3(document: DocumentSchema):
         filters = MetadataFilters(
             filters=[ExactMatchFilter(key=DB_DOC_ID_KEY, value=doc_id)]
         )
+        
         query_engine = index.as_query_engine(filters=filters, similarity_top_k=3)
 
         

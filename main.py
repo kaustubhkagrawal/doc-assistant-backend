@@ -7,6 +7,14 @@ import os
 import uvicorn
 import sys
 
+from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+
 from typing import cast
 
 from alembic.config import Config
@@ -22,8 +30,6 @@ from app.core.config import settings,AppEnvironment
 from app.api.api import api_router
 from app.db.wait_for_db import check_database_connection
 from app.db.pg_vector import get_vector_store_singleton, CustomPGVectorStore
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 logger = logging.getLogger(__name__)
@@ -103,7 +109,45 @@ if settings.BACKEND_CORS_ORIGINS:
 app.include_router(api_router, prefix=settings.API_PREFIX)
 
 
-print(settings.OPENAI_API_KEY)
+
+# Handler for status code: 5xx
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=jsonable_encoder(
+            {
+                "code": exc.status_code,
+                "message": exc.detail,
+                "error_code": exc.status_code,
+            }
+        ),
+    )
+
+
+# Handler for erroneous user input. Status code: 4xx
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    msg_parts = []
+    for error in exc.errors():
+        msg_parts.append(f"{error['input']}: {error['msg']}")
+        if "type" in error.keys():
+            msg_parts[-1] += f"; {error['type']}"
+        if "ctx" in error.keys():
+            msg_parts[-1] += f".  {error['ctx']['error']}"
+
+    message = "\n\n".join(msg_parts)
+
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder(
+            {
+                "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "message": message,
+                "error_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+            }
+        ),
+    )
 
 
 def start():
@@ -125,3 +169,5 @@ def start():
         reload=live_reload,
         workers=settings.UVICORN_WORKER_COUNT,
     )
+
+
