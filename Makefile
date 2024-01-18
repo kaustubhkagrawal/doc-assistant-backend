@@ -4,6 +4,9 @@ run:
 	docker compose start db localstack
 	poetry run start
 
+run-render:
+	# python app/engine/generate
+	poetry run start
 
 migrate:
 	echo "Running migrations."
