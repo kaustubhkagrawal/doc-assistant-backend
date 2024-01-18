@@ -40,6 +40,7 @@ def get_s3_fs(bucket_name: str = settings.S3_BUCKET_NAME) -> AsyncFileSystem:
         key=settings.AWS_KEY,
         secret=settings.AWS_SECRET,
         endpoint_url=settings.S3_ENDPOINT_URL,
+        client_kwargs={'region_name': settings.AWS_DEFAULT_REGION}
     )
     if not (settings.RENDER or s3.exists(bucket_name)):
         s3.mkdir(bucket_name)

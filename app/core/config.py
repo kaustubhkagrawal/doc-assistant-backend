@@ -40,6 +40,7 @@ class PreviewPrefixedSettings(BaseSettings):
     OPENAI_API_KEY: str
     AWS_KEY: str
     AWS_SECRET: str
+    AWS_DEFAULT_REGION: str
 
 
 
@@ -60,6 +61,7 @@ class Settings(PreviewPrefixedSettings):
     S3_BUCKET_NAME: str
     S3_ASSET_BUCKET_NAME: str
     CDN_BASE_URL: str
+    AWS_ENDPOINT_URL: str
     VECTOR_STORE_TABLE_NAME: str = "pg_vector_store"
     SENTRY_DSN: Optional[str] = ""
     RENDER_GIT_COMMIT: Optional[str] = ""
@@ -84,7 +86,7 @@ class Settings(PreviewPrefixedSettings):
         Used for setting S3 endpoint URL in the s3fs module.
         When running locally, this should be set to the localstack endpoint.
         """
-        return None if self.RENDER else "http://localhost:4566"
+        return self.AWS_ENDPOINT_URL if self.RENDER else "http://localhost:4566"
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
