@@ -60,86 +60,6 @@ class CitationSchema(BaseMetadataObject):
         )
 
 
-# class QuestionAnswerPair(BaseMetadataObject):
-#     """
-#     A question-answer pair that is used to store the sub-questions and answers
-#     """
-
-#     question: str
-#     answer: Optional[str]
-#     citations: Optional[List[Citation]] = None
-
-#     @classmethod
-#     def from_sub_question_answer_pair(
-#         cls, sub_question_answer_pair: SubQuestionAnswerPair
-#     ):
-#         if sub_question_answer_pair.sources is None:
-#             citations = None
-#         else:
-#             citations = [
-#                 Citation.from_node(node_w_score)
-#                 for node_w_score in sub_question_answer_pair.sources
-#                 if node_w_score.node.source_node is not None
-#                 and DB_DOC_ID_KEY in node_w_score.node.source_node.metadata
-#             ]
-#         citations = citations or None
-#         return cls(
-#             question=sub_question_answer_pair.sub_q.sub_question,
-#             answer=sub_question_answer_pair.answer,
-#             citations=citations,
-#         )
-
-
-# # later will be Union[QuestionAnswerPair, more to add later... ]
-# class SubProcessMetadataKeysEnum(str, Enum):
-#     SUB_QUESTION = EventPayload.SUB_QUESTION.value
-
-
-# # keeping the typing pretty loose here, in case there are changes to the metadata data formats.
-# SubProcessMetadataMap = Dict[Union[SubProcessMetadataKeysEnum, str], Any]
-
-
-# class MessageSubProcess(Base):
-#     message_id: UUID
-#     source: MessageSubProcessSourceEnum
-#     status: MessageSubProcessStatusEnum
-#     metadata_map: Optional[SubProcessMetadataMap]
-
-
-# class Message(Base):
-#     conversation_id: UUID
-#     content: str
-#     role: MessageRoleEnum
-#     status: MessageStatusEnum
-#     sub_processes: List[MessageSubProcess]
-
-
-# class UserMessageCreate(BaseModel):
-#     content: str
-
-
-class DocumentMetadataKeysEnum(str, Enum):
-    """
-    Enum for the keys of the metadata map for a document
-    """
-
-    # SEC_DOCUMENT = "sec_document"
-
-
-
-class SecDocumentMetadata(BaseModel):
-    """
-    Metadata for a document that is a sec document
-    """
-
-    year: int
-    quarter: Optional[int]
-    accession_number: Optional[str]
-    cik: Optional[str]
-    period_of_report_date: Optional[datetime]
-    filed_as_of_date: Optional[datetime]
-    date_as_of_change: Optional[datetime]
-
 
 DocumentMetadataMap = Dict[str, Any]
 
@@ -149,12 +69,3 @@ class DocumentSchema(Base):
     name: Optional[str]
     assistant_id: Optional[str]
     metadata_map: Optional[DocumentMetadataMap] = None
-
-
-# class Conversation(Base):
-#     messages: List[Message]
-#     documents: List[Document]
-
-
-# class ConversationCreate(BaseModel):
-#     document_ids: List[UUID]

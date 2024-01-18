@@ -32,8 +32,6 @@ from app.utils.file_utils import get_Document_url, get_s3_fs
 
 router = APIRouter()
 
-# # Initialize S3 client
-# s3_client = get_s3_client()
 
 class FileData(BaseModel):
     file: UploadFile
@@ -109,6 +107,3 @@ async def upload_file_to_s3(document: DocumentSchema):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Failed to index the Document")
-        
-    
-    # return {"message": "INdexing completed"}

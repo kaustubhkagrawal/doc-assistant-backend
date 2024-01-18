@@ -7,7 +7,6 @@ from app.api.deps import get_db
 from app.core.config import settings
 from app.assistant.doc_reader import assistant_data
 
-from app.db.session import SessionLocal
 from app.services.document import update_assistant_to_document, fetch_documents
 
 
