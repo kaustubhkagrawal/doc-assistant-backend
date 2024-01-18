@@ -155,7 +155,7 @@ def start():
     __setup_logging(settings.LOG_LEVEL)
     """Launched with `poetry run start` at root level"""
     
-    PORT = os.environ["PORT"]
+    PORT = int(os.environ["PORT"])
     if settings.RENDER:
         # on render.com deployments, run migrations
         logger.debug("Running migrations")
