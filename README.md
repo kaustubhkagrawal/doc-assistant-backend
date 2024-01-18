@@ -26,6 +26,7 @@ OPENAI_API_KEY=<openai_api_key>
 Second, generate the embeddings of the documents in the `./data` directory (if this folder exists - otherwise, skip this step):
 
 ```
+pip install awscli awscli-local
 # Setup for localstack
 make setup_localstack
 
