@@ -9,6 +9,10 @@ poetry shell
 poetry install
 
 cp example.env .env
+
+# Load env variables
+set -a
+source .env
 ```
 
 By default, we use the OpenAI LLM (though you can customize, see app/api/routers/chat.py). As a result you need to specify an `OPENAI_API_KEY` in an .env file in this directory.
@@ -22,24 +26,20 @@ OPENAI_API_KEY=<openai_api_key>
 Second, generate the embeddings of the documents in the `./data` directory (if this folder exists - otherwise, skip this step):
 
 ```
-python app/engine/generate.py
+# Setup for localstack
+make setup_localstack
+
+# DB Migrate
+make migrate
 ```
 
 Third, run the development server:
 
 ```
-python main.py
+poetry run start 
+# Start postgres and localstack using docker.
+make run
 ```
-
-Then call the API endpoint `/api/chat` to see the result:
-
-```
-curl --location 'localhost:8000/api/chat' \
---header 'Content-Type: application/json' \
---data '{ "messages": [{ "role": "user", "content": "Hello" }] }'
-```
-
-You can start editing the API by modifying `app/api/routers/chat.py`. The endpoint auto-updates as you save the file.
 
 Open [http://localhost:8000/docs](http://localhost:8000/docs) with your browser to see the Swagger UI of the API.
 
