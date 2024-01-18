@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.routers import chat, query, documents, assistant
+from app.api.routers import query, documents, assistant
 
 api_router = APIRouter()
 

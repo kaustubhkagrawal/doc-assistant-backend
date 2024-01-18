@@ -52,6 +52,7 @@ class Settings(PreviewPrefixedSettings):
     Application settings.
     """
 
+    PORT: Optional[int] = 8000
     PROJECT_NAME: str = "rag_system"
     API_PREFIX: str = "/api"
     DATABASE_URL: str
