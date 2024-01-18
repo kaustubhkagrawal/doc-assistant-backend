@@ -154,6 +154,8 @@ def start():
     print("Running in AppEnvironment: " + settings.ENVIRONMENT.value)
     __setup_logging(settings.LOG_LEVEL)
     """Launched with `poetry run start` at root level"""
+    
+    PORT = os.environ["PORT"]
     if settings.RENDER:
         # on render.com deployments, run migrations
         logger.debug("Running migrations")
@@ -166,6 +168,7 @@ def start():
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
+        port= 8000 if not PORT else PORT,
         reload=live_reload,
         workers=settings.UVICORN_WORKER_COUNT,
     )
