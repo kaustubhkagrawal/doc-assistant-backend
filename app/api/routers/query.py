@@ -15,7 +15,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_db
 from app.core.constants import DB_DOC_ID_KEY
 from app.engine.context import create_tool_service_context
-from app.engine.index import get_query_engine
 from app.engine.indexing import create_index_from_doc
 from app.schemas.base import CitationSchema
 from app.services.document import fetch_documents
@@ -40,7 +39,6 @@ class _Result(BaseModel):
 @r.post("")
 async def query_document(
     data: _QueryData,
-    query_engine: BaseQueryEngine = Depends(get_query_engine),
     db: AsyncSession = Depends(get_db),
 ) -> _Result:
     # check preconditions and get last message

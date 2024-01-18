@@ -6,7 +6,7 @@ from llama_index import (
 )
 
 from app.engine.constants import STORAGE_DIR
-from app.engine.context import create_service_context
+from app.engine.context import create_service_context, create_tool_service_context
 
 
 def get_chat_engine():
@@ -27,7 +27,7 @@ def get_chat_engine():
 
 
 def get_query_engine():
-    service_context = create_service_context()
+    service_context = create_tool_service_context()
     # check if storage already exists
     if not os.path.exists(STORAGE_DIR):
         raise Exception(
