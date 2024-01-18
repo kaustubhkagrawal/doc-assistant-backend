@@ -1,17 +1,19 @@
-This is a [LlamaIndex](https://www.llamaindex.ai/) project using [FastAPI](https://fastapi.tiangolo.com/) bootstrapped with [`create-llama`](https://github.com/run-llama/LlamaIndexTS/tree/main/packages/create-llama).
+This is a [LlamaIndex](https://www.llamaindex.ai/) project using [FastAPI](https://fastapi.tiangolo.com/) bootstrapped with [`create-llama`](https://github.com/run-llama/LlamaIndexTS/tree/main/packages/create-llama). Aiming to do RAG on documents
 
 ## Getting Started
 
 First, setup the environment:
 
 ```
-poetry install
 poetry shell
+poetry install
+
+cp example.env .env
 ```
 
 By default, we use the OpenAI LLM (though you can customize, see app/api/routers/chat.py). As a result you need to specify an `OPENAI_API_KEY` in an .env file in this directory.
 
-Example `backend/.env` file:
+Example `.env` file:
 
 ```
 OPENAI_API_KEY=<openai_api_key>
