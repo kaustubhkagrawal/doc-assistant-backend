@@ -144,7 +144,7 @@ class SecDocumentMetadata(BaseModel):
 DocumentMetadataMap = Dict[str, Any]
 
 
-class Document(Base):
+class DocumentSchema(Base):
     url: str
     metadata_map: Optional[DocumentMetadataMap] = None
 

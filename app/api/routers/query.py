@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from llama_index.chat_engine.types import BaseChatEngine
@@ -15,6 +15,7 @@ router = r = APIRouter()
 
 class _QueryData(BaseModel):
     query: str
+    doc_id: Optional[str]
 
 
 class _Result(BaseModel):

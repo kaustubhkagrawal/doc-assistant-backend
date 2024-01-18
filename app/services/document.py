@@ -16,7 +16,7 @@ async def upsert_single_document(doc_url: str):
         print("DOC_URL must be an http(s) based url value")
         return
     metadata_map = {}
-    doc = base.Document(url=doc_url, metadata_map=metadata_map)
+    doc = base.DocumentSchema(url=doc_url, metadata_map=metadata_map)
 
 
     async with SessionLocal() as db:
@@ -28,8 +28,8 @@ async def upsert_single_document(doc_url: str):
 
 
 async def upsert_document_by_url(
-    db: AsyncSession, document: base.Document
-) -> base.Document:
+    db: AsyncSession, document: base.DocumentSchema
+) -> base.DocumentSchema:
     """
     Upsert a document
     """
@@ -41,6 +41,6 @@ async def upsert_document_by_url(
     )
     stmt = stmt.returning(Document)
     result = await db.execute(stmt)
-    upserted_doc = base.Document.from_orm(result.scalars().first())
+    upserted_doc = base.DocumentSchema.from_orm(result.scalars().first())
     await db.commit()
     return upserted_doc

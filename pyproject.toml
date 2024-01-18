@@ -13,7 +13,6 @@ llama-index = "^0.9.19"
 pypdf = "^3.17.0"
 python-dotenv = "^1.0.0"
 pydantic-settings = "^2.1.0"
-boto3 = "^1.34.20"
 python-multipart = "^0.0.6"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.25"}
 alembic = "^1.13.1"
@@ -21,6 +20,9 @@ psycopg2 = {extras = ["binary"], version = "^2.9.9"}
 psycopg2-binary = "^2.9.9"
 asyncpg = "^0.29.0"
 pgvector = "^0.2.4"
+fsspec = "^2023.12.2"
+s3fs = "^2023.12.2"
+cachetools = "^5.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
